@@ -1,0 +1,45 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Build output
+bin/
+dist/
+build/
+
+# Go workspace files
+go.work
+go.work.sum
+
+# Go coverage / testing output
+*.cover
+*.coverprofile
+*.cov
+coverage.txt
+
+# Temporary files
+*.tmp
+*.temp
+
+# Editor / IDE files
+.vscode/
+.idea/
+*.iml
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Vendor (optional: ignore if you run `go mod vendor`)
+vendor/
+
+# Logs
+*.log
+
+# Cache directories
+.cache/
