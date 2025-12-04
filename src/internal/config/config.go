@@ -19,7 +19,20 @@ type Config struct {
 	RootPath    string   `json:"rootPath"`
 }
 
-func configFilePath() (string, error) {
+func ConfigDir() (string, error) {
+	base, err := os.UserConfigDir()
+	if err != nil {
+		return "", err
+	}
+
+	rdcDir := filepath.Join(base, "rdc")
+	if err := os.MkdirAll(rdcDir, 0o755); err != nil {
+		return "", err
+	}
+	return rdcDir, nil
+}
+
+func ConfigFilePath() (string, error) {
 	base, err := os.UserConfigDir()
 	if err != nil {
 		return "", err
@@ -34,7 +47,7 @@ func configFilePath() (string, error) {
 }
 
 func Load() (*Config, error) {
-	path, err := configFilePath()
+	path, err := ConfigFilePath()
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +71,7 @@ func Load() (*Config, error) {
 }
 
 func Save(cfg *Config) error {
-	path, err := configFilePath()
+	path, err := ConfigFilePath()
 	if err != nil {
 		return err
 	}
