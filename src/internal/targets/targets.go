@@ -13,12 +13,12 @@ type Target interface {
 }
 
 func NewTarget(cfg *config.Config) (Target, error) {
-	switch cfg.CurrentTool {
+	switch cfg.CurrentNotesTool {
 	case config.ToolObsidian:
 		return NewObsidianTarget(), nil
 	case config.ToolLogseq:
 		return NewLogseqTarget(), nil
 	default:
-		return nil, fmt.Errorf("unknown tool %q", cfg.CurrentTool)
+		return nil, fmt.Errorf("unknown tool %q", cfg.CurrentNotesTool)
 	}
 }

@@ -15,8 +15,9 @@ const (
 )
 
 type Config struct {
-	CurrentTool ToolType `json:"currentTool"`
-	RootPath    string   `json:"rootPath"`
+	CurrentNotesTool ToolType `json:"currentNotesTool"`
+	NotesVaultPath   string   `json:"notesVaultPath"`
+	FeedContentDir   string   `json:"feedContentDir"`
 }
 
 func ConfigDir() (string, error) {
@@ -25,11 +26,11 @@ func ConfigDir() (string, error) {
 		return "", err
 	}
 
-	rdcDir := filepath.Join(base, "rdc")
-	if err := os.MkdirAll(rdcDir, 0o755); err != nil {
+	rdcConfigDir := filepath.Join(base, "rdc")
+	if err := os.MkdirAll(rdcConfigDir, 0o755); err != nil {
 		return "", err
 	}
-	return rdcDir, nil
+	return rdcConfigDir, nil
 }
 
 func ConfigFilePath() (string, error) {
@@ -52,7 +53,6 @@ func Load() (*Config, error) {
 		return nil, err
 	}
 
-	// If file doesn't exist, return an empty default config
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		return &Config{}, nil
 	}
@@ -68,6 +68,19 @@ func Load() (*Config, error) {
 	}
 
 	return &cfg, nil
+}
+
+func (c *Config) GetFeedDir() (string, error) {
+	if c.FeedContentDir != "" {
+		return c.FeedContentDir, nil
+	}
+
+	dir, err := ConfigDir()
+	if err != nil {
+		return "", err
+	}
+	// Default path based on known repo structure
+	return filepath.Join(dir, "data", "ryan-landing", "src", "src", "content", "feed"), nil
 }
 
 func Save(cfg *Config) error {

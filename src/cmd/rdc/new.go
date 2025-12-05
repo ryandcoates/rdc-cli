@@ -11,4 +11,5 @@ var newCmd = &cobra.Command{
 
 func init() {
 	newCmd.AddCommand(syncrepoCmd)
+	rootCmd.AddCommand(newCmd)
 }

@@ -17,12 +17,12 @@ func NewLogseqTarget() *LogseqTarget {
 }
 
 func (l *LogseqTarget) AppendToDaily(cfg *config.Config, t domain.Task, day time.Time) (string, error) {
-	if cfg.RootPath == "" {
+	if cfg.NotesVaultPath == "" {
 		return "", fmt.Errorf("root path is empty; run `rdc config --root <path>` first")
 	}
 
 	filename := day.Format("2006_01_02") + ".md"
-	path := filepath.Join(cfg.RootPath, "journals", filename)
+	path := filepath.Join(cfg.NotesVaultPath, "journals", filename)
 
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return "", err
