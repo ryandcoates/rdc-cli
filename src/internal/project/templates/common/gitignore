@@ -1,0 +1,20 @@
+# Temporary files
+*.tmp
+*.bak
+*~
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Generated or build artifacts that might be accidentally placed here
+*.o
+*.so
+*.dylib
+*.exe
+*.test
+*.out
+
+**/dist/
+**/bin/
+**/obj/

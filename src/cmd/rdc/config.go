@@ -12,6 +12,7 @@ var (
 	cfgCurrentNotesTool string
 	cfgNotesVaultPath   string
 	cfgFeedContentPath  string
+	cfgCodeRootPath     string
 )
 
 func init() {
@@ -47,15 +48,22 @@ func init() {
 				updated = true
 			}
 
+			if cfgCodeRootPath != "" {
+				cfg.CodeRootPath = cfgCodeRootPath
+				updated = true
+			}
+
 			if updated {
 				if err := config.Save(cfg); err != nil {
 					return err
 				}
 				fmt.Println("Configuration updated.")
 			} else {
-				fmt.Printf("Current Notes tool: %s\n", cfg.CurrentNotesTool)
+				fmt.Println("Current configuration:")
+				fmt.Printf("=====================\n")
+				fmt.Printf("Code Base Path     :%s\n", cfg.CodeRootPath)
+				fmt.Printf("Current Notes tool : %s\n", cfg.CurrentNotesTool)
 				fmt.Printf("Notes Vault Path   : %s\n", cfg.NotesVaultPath)
-
 				feedDir, _ := cfg.GetFeedDir()
 				fmt.Printf("Feed content dir  : %s (configured: %q)\n", feedDir, cfg.FeedContentDir)
 			}
@@ -67,6 +75,7 @@ func init() {
 	configCmd.Flags().StringVar(&cfgCurrentNotesTool, "tool", "", "Target Notes tool (obsidian or logseq)")
 	configCmd.Flags().StringVar(&cfgNotesVaultPath, "root", "", "Path to Notes Vault")
 	configCmd.Flags().StringVar(&cfgFeedContentPath, "feed", "", "Directory for feed content")
+	configCmd.Flags().StringVar(&cfgCodeRootPath, "codeRootPath", "", "Base directory for software projects")
 
 	rootCmd.AddCommand(configCmd)
 }

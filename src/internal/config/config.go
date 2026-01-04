@@ -17,7 +17,8 @@ const (
 type Config struct {
 	CurrentNotesTool ToolType `json:"currentNotesTool"`
 	NotesVaultPath   string   `json:"notesVaultPath"`
-	FeedContentDir   string   `json:"feedContentDir"`
+	FeedContentDir   string   `json:"feedContentPath"`
+	CodeRootPath     string   `json:"codeRootPath"`
 }
 
 func ConfigDir() (string, error) {

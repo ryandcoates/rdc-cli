@@ -3,6 +3,8 @@ package rdc
 import (
 	"fmt"
 
+	"rdc/cmd/rdc/project"
+
 	"github.com/spf13/cobra"
 )
 
@@ -30,4 +32,6 @@ func init() {
 		false,
 		"enable verbose logging",
 	)
+
+	rootCmd.AddCommand(project.ProjectCmd)
 }
