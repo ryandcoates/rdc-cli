@@ -1,4 +1,4 @@
-package rdc
+package validate
 
 import (
 	"fmt"
@@ -41,5 +41,5 @@ var validateToolsCmd = &cobra.Command{
 }
 
 func init() {
-	validateCmd.AddCommand(validateToolsCmd)
+	ValidateCmd.AddCommand(validateToolsCmd)
 }

@@ -1,4 +1,4 @@
-package rdc
+package cmd
 
 import (
 	"fmt"

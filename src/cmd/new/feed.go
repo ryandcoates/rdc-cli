@@ -1,4 +1,4 @@
-package rdc
+package new
 
 import (
 	"fmt"
@@ -47,7 +47,8 @@ func init() {
 				return err
 			}
 
-			if Verbose {
+			verbose, _ := cmd.Flags().GetBool("verbose")
+			if verbose {
 				fmt.Printf("Feed item written to: %s\n", path)
 			} else {
 				fmt.Println(path)
@@ -60,5 +61,5 @@ func init() {
 	feedCmd.Flags().StringVar(&feedDate, "date", "", "Date override (YYYYMMDD)")
 	feedCmd.Flags().StringVar(&feedTitle, "title", "", "Title for the feed item")
 
-	newCmd.AddCommand(feedCmd)
+	NewCmd.AddCommand(feedCmd)
 }

@@ -2,12 +2,11 @@ package main
 
 import (
 	"log"
-
-	"rdc/cmd/rdc"
+	"rdc/cmd"
 )
 
 func main() {
-	if err := rdc.Execute(); err != nil {
+	if err := cmd.Execute(); err != nil {
 		log.Fatal(err)
 	}
 }

@@ -1,14 +1,15 @@
-package rdc
+package cmd
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"rdc/internal/new"
+
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
-	"os"
-	"path/filepath"
-	"rdc/internal/new"
 )
 
 // spinnerModel is used for the Bubble Tea spinner

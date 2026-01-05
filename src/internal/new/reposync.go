@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"rdc/internal/config"
 	//"github.com/charmbracelet/bubbletea"
+
+	"gopkg.in/yaml.v3"
 )
 
 type RepoConfig struct {
@@ -66,6 +68,49 @@ func EnsureReposSync(repos []RepoConfig) error {
 		}
 	}
 	return nil
+}
+
+func AddRepoToConfig(configDir string, newRepo RepoConfig) (int, error) {
+	configFile := filepath.Join(configDir, "repos.yaml")
+
+	var repos []RepoConfig
+	if data, err := os.ReadFile(configFile); err == nil {
+		var cfg struct {
+			SyncRepos []RepoConfig `yaml:"sync_repos"`
+		}
+		if err := yaml.Unmarshal(data, &cfg); err == nil {
+			repos = cfg.SyncRepos
+		}
+	}
+
+	// Logic for checking duplicates
+	found := false
+	for _, r := range repos {
+		if r.URL == newRepo.URL || r.Name == newRepo.Name {
+			found = true
+			break
+		}
+	}
+	if !found {
+		repos = append(repos, newRepo)
+	}
+
+	// Write back
+	f, err := os.Create(configFile)
+	if err != nil {
+		return 0, err
+	}
+	defer f.Close()
+
+	output := struct {
+		SyncRepos []RepoConfig `yaml:"sync_repos"`
+	}{SyncRepos: repos}
+
+	if err := yaml.NewEncoder(f).Encode(&output); err != nil {
+		return 0, err
+	}
+
+	return len(repos), nil
 }
 
 func main() {

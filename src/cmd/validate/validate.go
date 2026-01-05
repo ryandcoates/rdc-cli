@@ -1,10 +1,10 @@
-package rdc
+package validate
 
 import (
 	"github.com/spf13/cobra"
 )
 
-var validateCmd = &cobra.Command{
+var ValidateCmd = &cobra.Command{
 	Use:   "validate",
 	Short: "Validate environment dependencies and system requirements",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -13,5 +13,5 @@ var validateCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(validateCmd)
+
 }
