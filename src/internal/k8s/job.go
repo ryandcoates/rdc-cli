@@ -3,75 +3,20 @@ package k8s
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 	"strings"
-	"text/template"
 	"time"
 )
 
-// JobOptions holds the parameters for an ad-hoc echo job.
-type JobOptions struct {
-	Name      string
-	Namespace string
-	Image     string
-	Message   string
-}
-
-// jobTemplate is the embedded Kubernetes Job spec template.
-// Parameters are substituted via Go's text/template.
-var jobTemplate = template.Must(template.New("job").Parse(`apiVersion: batch/v1
-kind: Job
-metadata:
-  name: {{ .Name }}
-  namespace: {{ .Namespace }}
-  labels:
-    app.kubernetes.io/managed-by: rdc
-    rdc/job-type: echo
-spec:
-  ttlSecondsAfterFinished: 120
-  backoffLimit: 0
-  template:
-    spec:
-      restartPolicy: Never
-      containers:
-        - name: echo
-          image: {{ .Image }}
-          command: ["sh", "-c", "echo {{ .QuotedMessage }}"]
-`))
-
 // GenerateName returns a unique job name with an rdc- prefix.
-func GenerateName() string {
-	return fmt.Sprintf("rdc-echo-%d", time.Now().UnixMilli())
+func GenerateName(jobType string) string {
+	return fmt.Sprintf("rdc-%s-%d", jobType, time.Now().UnixMilli())
 }
 
-// RenderJobYAML fills the job template with opts and returns YAML bytes.
-func RenderJobYAML(opts JobOptions) ([]byte, error) {
-	data := struct {
-		JobOptions
-		QuotedMessage string
-	}{
-		JobOptions:    opts,
-		QuotedMessage: shellQuote(opts.Message),
-	}
-
-	var buf bytes.Buffer
-	if err := jobTemplate.Execute(&buf, data); err != nil {
-		return nil, fmt.Errorf("render job yaml: %w", err)
-	}
-	return buf.Bytes(), nil
-}
-
-// Apply submits the job to the cluster via kubectl apply and returns the
-// applied job name.
-func Apply(opts JobOptions) (string, error) {
+// Apply pipes pre-rendered YAML to kubectl apply and returns the job name.
+func Apply(yaml []byte, name, namespace string) (string, error) {
 	if err := requireKubectl(); err != nil {
-		return "", err
-	}
-
-	yaml, err := RenderJobYAML(opts)
-	if err != nil {
 		return "", err
 	}
 
@@ -83,7 +28,7 @@ func Apply(opts JobOptions) (string, error) {
 	if err := cmd.Run(); err != nil {
 		return "", fmt.Errorf("kubectl apply: %w", err)
 	}
-	return opts.Name, nil
+	return name, nil
 }
 
 // WaitAndLogs blocks until the job completes (or fails) then streams logs.
@@ -115,16 +60,6 @@ func WaitAndLogs(name, namespace string) error {
 	logs.Stdout = os.Stdout
 	logs.Stderr = os.Stderr
 	return logs.Run()
-}
-
-// DryRun writes the rendered YAML to w without submitting it.
-func DryRun(opts JobOptions, w io.Writer) error {
-	yaml, err := RenderJobYAML(opts)
-	if err != nil {
-		return err
-	}
-	_, err = w.Write(yaml)
-	return err
 }
 
 func requireKubectl() error {
