@@ -6,14 +6,14 @@ import (
 	"text/template"
 )
 
-type EchoOptions struct {
+type PodPingOptions struct {
 	Name      string
 	Namespace string
 	Image     string
-	Message   string
+	IpAddress string
 }
 
-var echoTemplate = template.Must(template.New("echo").Parse(`apiVersion: batch/v1
+var podPingTemplate = template.Must(template.New("podping").Parse(`apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ .Name }}
@@ -28,22 +28,22 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-        - name: echo
+        - name: podping
           image: {{ .Image }}
-          command: ["sh", "-c", "echo {{ .QuotedMessage }}"]
+          command: ["sh", "-c", "ping -c 4 {{ .IpAddress }}"]
 `))
 
-func RenderEchoYAML(opts EchoOptions) ([]byte, error) {
+func RenderPodPingYAML(opts PodPingOptions) ([]byte, error) {
 	data := struct {
-		EchoOptions
+		PodPingOptions
 		QuotedMessage string
 	}{
-		EchoOptions:   opts,
-		QuotedMessage: shellQuote(opts.Message),
+		PodPingOptions: opts,
+		QuotedMessage:  shellQuote(opts.IpAddress),
 	}
 
 	var buf bytes.Buffer
-	if err := echoTemplate.Execute(&buf, data); err != nil {
+	if err := podPingTemplate.Execute(&buf, data); err != nil {
 		return nil, fmt.Errorf("render echo yaml: %w", err)
 	}
 	return buf.Bytes(), nil
